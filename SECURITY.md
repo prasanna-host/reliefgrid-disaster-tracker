@@ -1,15 +1,24 @@
-# Security policy
+# Security Policy
 
-This is a demonstration project and is not suitable for operational emergency use.
+## Scope
 
-## Reporting a vulnerability
+ReliefGrid is an educational, client-side prototype with fictional data. It has no backend, account system, live feeds, or production emergency-response capability.
 
-Please do not publish sensitive personal information or exploit details in a public issue. Contact the repository maintainer privately through GitHub's available contact options.
+## Reporting a concern
 
-## Current security limitations
+Please do not include real personal information, credentials, or sensitive incident details in a public issue. For a non-sensitive code concern, open a GitHub issue with a minimal reproduction. For a sensitive concern, contact the repository owner privately through GitHub before publishing details.
 
-- No authentication or authorization.
-- No server-side validation because there is no backend.
-- No persistence or audit log.
-- No live integrations.
-- Do not enter real personal or emergency data.
+## Current limitations
+
+- Browser-local storage is not a secure data store.
+- There is no authentication, authorisation, server-side validation, or audit-grade history.
+- No production availability, integrity, or confidentiality guarantees are offered.
+- The application must not be used to direct real emergency operations.
+
+## Safe-development practices
+
+- Keep sample data fictional.
+- Escape user-controlled text before HTML rendering.
+- Validate values before mutating local state.
+- Do not commit secrets or private data.
+- A real deployment would require threat modelling, security review, server-side access controls, audit trails, backups, monitoring, and an incident-response process.
