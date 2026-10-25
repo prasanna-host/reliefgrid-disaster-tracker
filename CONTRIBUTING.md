@@ -1,44 +1,22 @@
 # Contributing to ReliefGrid
 
-Thanks for helping improve this student project. Small, reviewable contributions are preferred.
+Thanks for helping improve this educational prototype.
 
-## Before you start
+## Workflow
 
-- Read the project README and the relevant documents in `docs/`.
-- Check open issues and pull requests so work is not duplicated.
-- Open an issue first for large feature changes or architecture proposals.
+1. Create a branch from `main` using a descriptive name such as `feat/inventory-filters` or `fix/api-validation`.
+2. Keep pull requests focused and explain the user-visible change.
+3. Add or update tests for behavior changes.
+4. Run the checks listed in the README.
+5. Never include real personal data, credentials, or emergency incident data.
 
-## Development workflow
+## Code conventions
 
-1. Create a branch from `main` with a descriptive name, such as `feat/inventory-export` or `docs/testing-guide`.
-2. Keep a pull request focused on one change.
-3. Update documentation and `CHANGELOG.md` when user-visible behaviour changes.
-4. Run the checks below before opening a pull request.
-5. Describe the motivation, implementation, test steps, and limitations in the PR.
+- Python: type hints for public helpers, validate untrusted inputs, and use parameterized SQL through `sqlite3`.
+- JavaScript: keep DOM updates escaped, use accessible labels, and preserve offline demo behavior.
+- CSS: keep shared styles in `assets/css/styles.css`; do not re-embed the stylesheet into HTML.
+- SQL: update `backend/schema.sql` and tests when schema behavior changes.
 
-## Local checks
+## Scope and safety
 
-```bash
-python scripts/validate_project.py
-python -m unittest discover -s tests -v
-```
-
-Open `index.html` in a modern browser and manually exercise the affected flow. If you change the UI, check a narrow/mobile viewport and the browser console.
-
-## Contribution expectations
-
-- Use semantic HTML and label controls for accessibility.
-- Escape user-provided text before inserting it into HTML.
-- Do not add real personal, location, or emergency incident data to examples.
-- Do not represent sample information as live or verified.
-- Avoid adding dependencies unless there is a clear need and the dependency is documented.
-- Never commit secrets, API keys, credentials, or private data.
-
-## Pull request checklist
-
-- [ ] The change has one clear purpose.
-- [ ] Existing functionality remains intact.
-- [ ] Automated checks pass.
-- [ ] Manual testing steps and results are included.
-- [ ] Documentation/changelog updated where applicable.
-- [ ] Limitations and any follow-up work are explained.
+ReliefGrid is not approved for emergency operations. Avoid describing fictional sample data as live or verified.

@@ -2,23 +2,15 @@
 
 ## Scope
 
-ReliefGrid is an educational, client-side prototype with fictional data. It has no backend, account system, live feeds, or production emergency-response capability.
+ReliefGrid is an educational prototype. It is not designed or approved for production or emergency response. The local Flask server does not provide user authentication, authorization, CSRF protection for deployment, rate limiting, or hardened operational logging.
 
-## Reporting a concern
+## Reporting
 
-Please do not include real personal information, credentials, or sensitive incident details in a public issue. For a non-sensitive code concern, open a GitHub issue with a minimal reproduction. For a sensitive concern, contact the repository owner privately through GitHub before publishing details.
+Please do not publish credentials, private data, or real emergency information in issues. For a classroom project, report bugs privately to the repository maintainer or open a sanitized issue without sensitive information.
 
-## Current limitations
+## Safe use
 
-- Browser-local storage is not a secure data store.
-- There is no authentication, authorisation, server-side validation, or audit-grade history.
-- No production availability, integrity, or confidentiality guarantees are offered.
-- The application must not be used to direct real emergency operations.
-
-## Safe-development practices
-
-- Keep sample data fictional.
-- Escape user-controlled text before HTML rendering.
-- Validate values before mutating local state.
-- Do not commit secrets or private data.
-- A real deployment would require threat modelling, security review, server-side access controls, audit trails, backups, monitoring, and an incident-response process.
+- Use fictional sample records only.
+- Do not expose the development server directly to the public internet.
+- Do not put secrets into source code or `.env` files under version control.
+- Review and harden the system before any external deployment.

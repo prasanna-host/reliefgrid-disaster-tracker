@@ -1,92 +1,121 @@
 # ReliefGrid — Disaster Relief Resource Tracker
 
-[![Project Quality Checks](https://github.com/prasanna-host/reliefgrid-disaster-tracker/actions/workflows/quality.yml/badge.svg)](https://github.com/prasanna-host/reliefgrid-disaster-tracker/actions/workflows/quality.yml)
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-REST%20API-black?logo=flask) ![JavaScript](https://img.shields.io/badge/JavaScript-ES2020-F7DF1E?logo=javascript&logoColor=222) ![SQLite](https://img.shields.io/badge/SQLite-persistent%20storage-003B57?logo=sqlite&logoColor=white) ![License](https://img.shields.io/badge/License-MIT-green)
 
-ReliefGrid is a student-built, responsive front-end prototype for demonstrating how relief coordinators could review sample shelter capacity, track resource requests, and monitor supply inventory from one workspace.
+ReliefGrid is an educational disaster-relief coordination prototype. It brings example shelter occupancy, incoming resource requests, inventory levels, and a recent-activity register into one dashboard. The codebase separates the frontend (HTML, CSS, JavaScript) from a Python/Flask API and SQLite data layer.
 
-> **Prototype disclaimer:** All people, places, counts, and requests are fictional sample data. This repository is not an emergency-response service. It has no backend, authentication, live location feed, dispatch integration, or operational guarantees. Do not use it to make real-world emergency decisions.
+> **Safety notice:** All people, locations, counts, and needs are fictional sample data. This is not an emergency-response service and has no live dispatch, emergency feed, authentication, or operational guarantees. Do not use it for real-world emergency decisions.
 
 ## Features
 
-- Overview dashboard with request, shelter, occupancy, and low-stock summaries.
-- Request register with search, priority/status filters, and resolve/reopen controls.
-- Create a resource request with basic form validation.
-- Export the request register to CSV.
-- Shelter directory with capacity indicators.
-- Inventory thresholds and visual low-stock warnings.
-- Adjust inventory up or down, preventing stock from becoming negative.
-- Export the inventory register to CSV.
-- Local browser persistence for demo requests, inventory adjustments, shelters, and activity when browser storage is available.
-- Responsive layout and light/dark color-scheme support.
-- Automated static checks through GitHub Actions.
+- Responsive dashboard with sample shelter capacity and low-stock summaries.
+- Request search and priority/status filters.
+- Mark requests resolved and reopen them.
+- Inventory adjustments with negative-stock protection and reorder-threshold warnings.
+- CSV export for requests and inventory.
+- Browser-local fallback when the Python API is unavailable.
+- Flask REST endpoints backed by a relational SQLite database when run as a server.
+- Input validation, transaction-based state updates, API tests, and GitHub Actions checks.
 
-## Run locally
+## Technology stack
 
-No package manager or build step is required.
+| Layer | Technology | Responsibility |
+|---|---|---|
+| UI | HTML5 | Accessible page structure |
+| Styling | CSS3 | Responsive layout and theme |
+| Client behavior | JavaScript | Filtering, forms, exports, API synchronization |
+| API | Python 3.11+ and Flask | Validation and HTTP endpoints |
+| Persistence | SQLite and SQL | Requests, shelters, stock, activity |
+| Automation | GitHub Actions YAML | Test and quality checks on pushes and pull requests |
 
-1. Download or clone the repository.
-2. Open `index.html` in a modern browser.
-3. Navigate between Overview, Requests, Shelters, and Inventory.
+## Run locally (Windows)
 
-For a more consistent browser storage origin, serve the repository from a local static server instead of opening the file directly. For example, with Python installed:
+1. Install Python 3.11 or newer.
+2. Open Command Prompt in this project folder.
+3. Run:
+
+   ```bat
+   py -m venv .venv
+   .venv\Scripts\activate
+   python -m pip install -r requirements.txt
+   python backend\app.py
+   ```
+
+4. Open http://127.0.0.1:5000 in your browser. The first start creates `instance/reliefgrid.sqlite3` and seeds fictional demo data.
+
+## Run locally (macOS/Linux)
 
 ```bash
-python -m http.server 8000
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python backend/app.py
 ```
 
-Then open `http://localhost:8000`.
+Then open http://127.0.0.1:5000. Flask serves the UI and API from the same origin.
 
-## Data and privacy
+## API overview
 
-The application is currently a client-side demo. It uses browser `localStorage` when available; that data is local to the browser profile and site origin, is not shared with other users, and can be cleared by clearing that site's browser data. There is no server database or account system. Do not enter personal, confidential, or real incident data.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/health` | Health/status check |
+| `GET` | `/api/state` | Read complete demo state |
+| `PUT` | `/api/state` | Validate and save a state snapshot |
+| `GET` | `/api/requests` | List requests |
+| `POST` | `/api/requests` | Create a request |
+| `PATCH` | `/api/requests/<id>` | Update a request status |
+| `GET` | `/api/shelters` | List shelters |
+| `GET` | `/api/inventory` | List inventory |
+| `PATCH` | `/api/inventory/<item_name>` | Adjust stock by an integer `delta` |
+| `GET` | `/api/activity` | List recent activity |
 
-## Repository layout
+Example health check:
+
+```bash
+curl http://127.0.0.1:5000/api/health
+```
+
+Example inventory adjustment:
+
+```bash
+curl -X PATCH http://127.0.0.1:5000/api/inventory/Blankets \
+  -H 'Content-Type: application/json' \
+  -d '{"delta": 20}'
+```
+
+## Tests and checks
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/validate_project.py
+node --check assets/js/app.js
+```
+
+GitHub Actions runs these checks automatically for pushes and pull requests.
+
+## Repository structure
 
 ```text
 .
 ├── index.html
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── SECURITY.md
+├── assets/
+│   ├── css/styles.css
+│   └── js/app.js
+├── backend/
+│   ├── app.py
+│   └── schema.sql
+├── tests/test_api.py
+├── scripts/validate_project.py
 ├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── FEATURES.md
-│   ├── PROJECT_OVERVIEW.md
-│   ├── ROADMAP.md
-│   └── TESTING.md
-├── scripts/
-│   └── validate_project.py
-├── tests/
-│   └── test_project.py
-└── .github/
-    ├── ISSUE_TEMPLATE/
-    │   ├── bug_report.md
-    │   └── feature_request.md
-    ├── pull_request_template.md
-    └── workflows/
-        └── quality.yml
+├── .github/workflows/quality.yml
+├── requirements.txt
+└── README.md
 ```
 
-## Quality checks
+## Project status
 
-The project uses Python's standard library only for repository checks. Run:
-
-```bash
-python scripts/validate_project.py
-python -m unittest discover -s tests -v
-```
-
-GitHub Actions runs these commands when changes are pushed or a pull request is opened against `main`.
-
-## Roadmap
-
-See [`docs/ROADMAP.md`](docs/ROADMAP.md) for planned work. Any real deployment would require a separately designed and reviewed backend, authentication and role-based permissions, audit logging, validation, secure operations, accessibility testing, and formal emergency-management partner review.
+This is a student/demo prototype. It currently has no login, authorization, deployment hardening, audit-grade record integrity, realtime synchronization, map/geocoding integration, or service-level guarantees. The included API is suitable for local learning and testing, not public emergency operations.
 
 ## Contributing
 
-Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Keep changes scoped, describe how they were tested, and update documentation when behaviour changes.
-
-## License
-
-See [`LICENSE`](LICENSE) for the repository's license.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Please include tests for behavior changes and keep demo-only claims explicit.
