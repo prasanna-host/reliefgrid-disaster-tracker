@@ -1,21 +1,18 @@
-# OS/editor files
+# Operating system files
 .DS_Store
 Thumbs.db
+
+# Editor settings
 .vscode/
 .idea/
-
-# Logs and temporary files
-*.log
-*.tmp
 *.swp
 
-# Environment secrets
+# Python test/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environment files (never commit credentials)
 .env
 .env.*
 !.env.example
-
-# Dependencies/build outputs (if introduced later)
-node_modules/
-dist/
-build/
-coverage/
