@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReliefGrid — Disaster Relief Resource Tracker</title>
+<style>
+:root {
+  --site-primary: #145B50;
+  --site-on-primary: #FFFFFF;
+  --site-secondary: #E3A64F;
+  --site-on-secondary: #1F2933;
+  --site-background: #F3F6F4;
+  --site-on-background: #172522;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); background: light-dark(#F3F6F4,#101815); color: light-dark(#172522,#EAF2ED); }
+#app { min-height: 100vh; background-color: var(--site-background); color: var(--site-on-background); border-radius: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.layout { display: grid; grid-template-columns: 244px minmax(0,1fr); min-height: 100vh; }
+.sidebar { background: var(--site-primary); color: var(--site-on-primary); padding: calc(24px * var(--site-spacing-scale)) 16px; display: flex; flex-direction: column; gap: 30px; }
+.brand { display: flex; align-items: center; gap: 11px; padding: 0 8px; }
+.brand-mark { width: 40px; height: 40px; border-radius: calc(13px * var(--site-radius-scale)); background: var(--site-secondary); color: #172522; display: grid; place-items: center; font-size: 22px; font-weight: 900; }
+.brand-name { font-size: calc(18px * var(--site-heading-scale)); font-weight: 800; letter-spacing: -.5px; }
+.brand-sub { font-size: 11px; opacity: .7; margin-top: 2px; }
+.nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.7px; opacity: .6; padding: 0 12px; margin-bottom: 9px; }
+.nav { display: grid; gap: 6px; }
+.nav button { border: 0; background: transparent; color: inherit; opacity: .8; padding: 12px; border-radius: calc(10px * var(--site-radius-scale)); text-align: left; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.nav button.active, .nav button:hover { background: rgba(255,255,255,.15); opacity: 1; }
+.nav-icon { width: 20px; text-align: center; font-size: 17px; }
+.sidebar-bottom { margin-top: auto; }
+.pilot-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: calc(14px * var(--site-radius-scale)); padding: 14px; font-size: 12px; line-height: 1.5; }
+.pilot-card strong { display: block; margin-bottom: 5px; }
+.pilot-card span { opacity: .75; }
+.main { min-width: 0; }
+.topbar { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 34px; border-bottom: 1px solid light-dark(#E0E8E3,#293630); background: light-dark(#FFFFFF,#17211D); }
+.crumb { color: light-dark(#72817A,#A8B7AF); font-size: 12px; }
+.crumb strong { color: light-dark(#253B33,#EAF2ED); font-weight: 700; }
+.top-actions { display: flex; align-items: center; gap: 12px; }
+.live { display: flex; align-items: center; gap: 7px; color: light-dark(#386E56,#A4D4B6); font-size: 12px; font-weight: 700; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #36B37E; box-shadow: 0 0 0 4px rgba(54,179,126,.13); }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: #E8CBA4; color: #68451C; }
+.content { padding: 30px 34px 40px; max-width: 1500px; margin: 0 auto; }
+.page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 25px; }
+.eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 1.8px; color: #618173; font-weight: 800; margin-bottom: 8px; }
+h1,h2,h3,p { margin-top: 0; }
+h1 { font-family: var(--site-font-heading); font-size: calc(30px * var(--site-heading-scale)); letter-spacing: -1.1px; margin-bottom: 8px; line-height: 1.1; }
+.subtitle { color: light-dark(#718078,#AAB8B0); font-size: 13px; line-height: 1.55; margin: 0; }
+.primary-btn { background: var(--site-primary); color: var(--site-on-primary); border: 0; padding: 11px 15px; border-radius: calc(9px * var(--site-radius-scale)); font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 3px 8px rgba(20,91,80,.12); }
+.primary-btn:hover { filter: brightness(1.1); }
+.secondary-btn { background: light-dark(#FFFFFF,#202D27); color: inherit; border: 1px solid light-dark(#DCE5DF,#36453C); padding: 10px 13px; border-radius: calc(9px * var(--site-radius-scale)); font-size: 12px; font-weight: 650; }
+.stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 15px; margin-bottom: 22px; }
+.stat-card { background: light-dark(#FFFFFF,#17211D); border: 1px solid light-dark(#E3EAE5,#293630); border-radius: calc(15px * var(--site-radius-scale)); padding: 18px; min-width: 0; }
+.stat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
+.stat-label { font-size: 11px; color: light-dark(#728078,#AAB8B0); font-weight: 650; }
+.stat-icon { width: 33px; height: 33px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; }
+.i-green { background: #E0F2E7; color: #27734B; }.i-amber { background: #FFF0D6; color: #9C6718; }.i-blue { background: #E2EEFF; color: #3A67A8; }.i-red { background: #FBE5E0; color: #A34232; }
+.stat-number { font-size: 29px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+.stat-foot { font-size: 10px; color: light-dark(#728078,#AAB8B0); }
+.stat-foot strong { color: #31815A; }
+.dashboard-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(290px,1fr); gap: 18px; align-items: start; }
+.panel { background: light-dark(#FFFFFF,#17211D); border: 1px solid light-dark(#E3EAE5,#293630); border-radius: calc(15px * var(--site-radius-scale)); overflow: hidden; min-width: 0; }
+.panel-head { padding: 19px 20px 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.panel-title { font-size: 14px; font-weight: 800; margin: 0 0 4px; }
+.panel-sub { font-size: 11px; color: light-dark(#819087,#AAB8B0); margin: 0; }
+.text-link { border: 0; background: transparent; color: #3C8A6B; font-weight: 750; font-size: 11px; padding: 5px; }
+.map-area { margin: 0 15px; border-radius: 12px; overflow: hidden; height: 265px; background: #DCE9E0; position: relative; }
+.map-area svg { width: 100%; height: 100%; display: block; }
+.map-legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 10px; background: rgba(255,255,255,.94); padding: 8px 10px; border-radius: 8px; font-size: 9px; color: #42584B; box-shadow: 0 2px 8px rgba(24,55,40,.1); }
+.legend-item { display: flex; align-items: center; gap: 5px; }.legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+.shelter-list { padding: 8px 20px 17px; }
+.shelter-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid light-dark(#EEF2EF,#293630); }
+.shelter-row:last-child { border-bottom: 0; }
+.shelter-symbol { width: 36px; height: 36px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; background: light-dark(#EEF6F0,#24392E); font-size: 17px; }
+.shelter-info { flex: 1; min-width: 0; }.shelter-name { font-size: 12px; font-weight: 750; margin-bottom: 4px; }.shelter-meta { color: light-dark(#839087,#AAB8B0); font-size: 10px; }
+.capacity { width: 80px; }.capacity-label { display: flex; justify-content: space-between; font-size: 9px; color: light-dark(#748178,#AAB8B0); margin-bottom: 6px; }.bar { height: 5px; background: light-dark(#E7EDE8,#2A3930); border-radius: 9px; overflow: hidden; }.bar span { display: block; height: 100%; border-radius: inherit; background: #3D9870; }.bar span.warn { background: #E1A44C; }.bar span.full { background: #D56B56; }
+.right-stack { display: grid; gap: 18px; }
+.urgent-panel { border-top: 3px solid #D8755E; }
+.request-list { padding: 0 18px 10px; }
+.request-row { display: flex; gap: 11px; padding: 13px 0; border-bottom: 1px solid light-dark(#EEF2EF,#293630); }.request-row:last-child { border-bottom: 0; }
+.priority { width: 3px; border-radius: 5px; flex-shrink: 0; background: #D76C55; }.priority.medium { background: #E1A44C; }.priority.low { background: #4C9D78; }
+.request-main { flex: 1; min-width: 0; }.request-name { font-size: 11px; font-weight: 800; margin-bottom: 5px; }.request-detail { font-size: 10px; color: light-dark(#7D8981,#AAB8B0); line-height: 1.5; }.tag { display: inline-block; font-size: 9px; padding: 4px 7px; border-radius: 6px; background: #FBE7E2; color: #A44936; font-weight: 800; white-space: nowrap; height: fit-content; }.tag.medium { background: #FFF0D6; color: #92621A; }.tag.low { background: #E1F2E8; color: #2D7651; }
+.inventory { padding: 0 20px 18px; }.inventory-item { padding: 10px 0; }.inventory-line { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 7px; font-size: 11px; }.inventory-line span:first-child { color: light-dark(#66766C,#AAB8B0); }.inventory-line strong { font-weight: 800; }
+.activity { margin-top: 18px; }.activity-list { padding: 0 20px 16px; }.activity-row { display: flex; align-items: flex-start; gap: 11px; padding: 10px 0; }.activity-bullet { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; background: light-dark(#E8F3EC,#24392E); flex-shrink: 0; font-size: 13px; }.activity-copy { font-size: 11px; line-height: 1.45; }.activity-copy span { color: light-dark(#87938B,#AAB8B0); display: block; font-size: 10px; margin-top: 3px; }
+.footer-note { margin-top: 20px; font-size: 10px; color: light-dark(#829087,#AAB8B0); display: flex; gap: 8px; align-items: center; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(8,20,15,.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+.modal-backdrop.show { display: flex; }.modal { width: min(480px,100%); background: light-dark(#FFFFFF,#17211D); color: light-dark(#172522,#EAF2ED); border-radius: 18px; padding: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.25); }.modal h2 { font-size: 20px; margin-bottom: 7px; }.modal p { color: light-dark(#718078,#AAB8B0); font-size: 12px; line-height: 1.5; margin-bottom: 20px; }.form-grid { display: grid; gap: 13px; }.field { display: grid; gap: 6px; font-size: 11px; font-weight: 750; }.field input,.field select,.field textarea { border: 1px solid light-dark(#DCE5DF,#36453C); background: light-dark(#FFFFFF,#101815); color: inherit; padding: 10px 11px; border-radius: 8px; font-size: 12px; width: 100%; }.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.toast { position: fixed; right: 22px; bottom: 22px; padding: 13px 16px; border-radius: 11px; background: #145B50; color: white; font-size: 12px; box-shadow: 0 8px 25px rgba(0,0,0,.2); display: none; z-index: 20; }.toast.show { display: block; }
+.view-panel { display: none; }.view-panel.show { display: block; }.empty-state { padding: 28px; color: light-dark(#718078,#AAB8B0); font-size: 12px; text-align: center; }
+@media (max-width: 1000px) { .layout { grid-template-columns: 205px minmax(0,1fr); }.content { padding: 24px 20px; }.topbar { padding: 0 20px; }.stats { grid-template-columns: repeat(2,minmax(0,1fr)); }.dashboard-grid { grid-template-columns: 1fr; }.right-stack { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 680px) { .layout { grid-template-columns: 1fr; }.sidebar { padding: 12px 14px; gap: 12px; }.brand { padding: 0 3px; }.nav-label,.sidebar-bottom { display: none; }.nav { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; }.nav button { justify-content: center; flex-direction: column; gap: 4px; padding: 8px 3px; font-size: 10px; }.nav-icon { font-size: 16px; }.topbar { height: 58px; padding: 0 16px; }.content { padding: 22px 14px 30px; }.page-heading { flex-direction: column; }.page-heading .primary-btn { width: 100%; justify-content: center; }.stats { gap: 10px; }.stat-card { padding: 13px; }.stat-number { font-size: 25px; }.right-stack { grid-template-columns: 1fr; }.map-area { height: 230px; }.capacity { width: 70px; } }
+@media (prefers-color-scheme: dark) { .map-area { background: #24382E; } .map-area svg .land { fill: #314B3C; } .map-area svg .road { stroke: #6B8473; } .map-area svg .water { fill: #243F47; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">✚</div><div><div class="brand-name">ReliefGrid</div><div class="brand-sub">RESPONSE COORDINATION</div></div></div>
+      <div><div class="nav-label">Workspace</div><nav class="nav" aria-label="Main navigation">
+        <button class="active" data-view="overview"><span class="nav-icon">◫</span>Overview</button>
+        <button data-view="requests"><span class="nav-icon">⇄</span>Requests <span id="navRequestCount" style="margin-left:auto;background:#E3A64F;color:#172522;border-radius:20px;padding:2px 6px;font-size:10px">3</span></button>
+        <button data-view="shelters"><span class="nav-icon">⌂</span>Shelters</button>
+        <button data-view="inventory"><span class="nav-icon">▤</span>Inventory</button>
+      </nav></div>
+      <div class="sidebar-bottom"><div class="pilot-card"><strong>◉ Demo operations mode</strong><span>Sample data only. No live emergency feeds or dispatches are connected.</span></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="crumb">Operations <span style="padding:0 7px;opacity:.5">/</span> <strong id="crumbCurrent">Overview</strong></div><div class="top-actions"><div class="live"><span class="dot"></span> Demo system online</div><div class="avatar">RG</div></div></header>
+      <div class="content">
+        <section class="page-heading"><div><div class="eyebrow">Emergency coordination · Demo region</div><h1 id="pageTitle">Response overview</h1><p class="subtitle" id="pageSubtitle">A shared picture of urgent needs, shelter capacity, and available supplies.</p></div><button class="primary-btn" id="newRequestBtn"><span style="font-size:17px">＋</span> Create resource request</button></section>
+        <section class="view-panel show" id="view-overview">
+          <div class="stats">
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Active requests</span><span class="stat-icon i-amber">⇄</span></div><div class="stat-number" id="activeCount">03</div><div class="stat-foot"><strong>Prioritize</strong> urgent unmet needs</div></article>
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Shelters tracked</span><span class="stat-icon i-green">⌂</span></div><div class="stat-number" id="shelterCount">04</div><div class="stat-foot">Across the demo response area</div></article>
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">People accommodated</span><span class="stat-icon i-blue">♙</span></div><div class="stat-number" id="peopleCount">1,240</div><div class="stat-foot">Illustrative occupancy figure</div></article>
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Items to replenish</span><span class="stat-icon i-red">▤</span></div><div class="stat-number" id="lowCount">02</div><div class="stat-foot">Inventory below demo threshold</div></article>
+          </div>
+          <div class="dashboard-grid">
+            <div class="panel"><div class="panel-head"><div><h2 class="panel-title">Response area</h2><p class="panel-sub">Illustrative locations · not a live map</p></div><span class="tag medium">DEMO REGION</span></div>
+              <div class="map-area"><svg viewBox="0 0 620 300" role="img" aria-label="Illustrative map with shelter and supply depot markers" preserveAspectRatio="xMidYMid slice"><rect class="water" width="620" height="300" fill="#C9E0DB"/><path class="land" d="M0 0H620V72L574 87 545 75 510 102 475 98 440 119 409 105 372 132 343 120 300 141 263 127 225 150 193 141 164 164 125 156 92 180 50 171 0 193Z" fill="#DDE9D9"/><path class="land" d="M0 214L51 197 94 212 127 195 170 213 214 193 252 209 291 187 330 205 365 180 401 193 440 174 476 187 520 160 560 177 620 151V300H0Z" fill="#DDE9D9"/><g fill="none" stroke="#F9FCF7" stroke-width="8" stroke-linecap="round"><path class="road" d="M-10 75C90 92 102 145 193 141S321 81 391 110 508 168 636 115"/><path class="road" d="M77 -10C104 64 154 113 177 177S205 254 232 312"/><path class="road" d="M335 -15C313 56 354 113 382 160S419 250 448 315"/><path class="road" d="M-20 244C90 219 160 251 251 226S416 224 640 253"/></g><g fill="none" stroke="#B6CDBD" stroke-width="2" stroke-dasharray="4 5"><path d="M0 38L620 260"/><path d="M25 300L590 0"/></g><g><circle cx="177" cy="141" r="17" fill="#267A59" opacity=".15"/><circle cx="177" cy="141" r="9" fill="#267A59" stroke="white" stroke-width="3"/><text x="191" y="133" fill="#244C3A" font-size="10" font-weight="700">North School</text><circle cx="382" cy="160" r="17" fill="#D98B35" opacity=".18"/><circle cx="382" cy="160" r="9" fill="#D98B35" stroke="white" stroke-width="3"/><text x="395" y="153" fill="#6F4B1D" font-size="10" font-weight="700">Community Hall</text><circle cx="448" cy="91" r="17" fill="#267A59" opacity=".15"/><circle cx="448" cy="91" r="9" fill="#267A59" stroke="white" stroke-width="3"/><text x="460" y="84" fill="#244C3A" font-size="10" font-weight="700">Supply Depot</text><circle cx="251" cy="226" r="17" fill="#C75B49" opacity=".15"/><circle cx="251" cy="226" r="9" fill="#C75B49" stroke="white" stroke-width="3"/><text x="263" y="220" fill="#823E31" font-size="10" font-weight="700">East Clinic</text></g></svg><div class="map-legend"><span class="legend-item"><i class="legend-dot" style="background:#267A59"></i>Shelter</span><span class="legend-item"><i class="legend-dot" style="background:#D98B35"></i>Needs attention</span><span class="legend-item"><i class="legend-dot" style="background:#C75B49"></i>Medical</span></div></div>
+              <div class="shelter-list" id="overviewShelters"></div>
+            </div>
+            <div class="right-stack">
+              <div class="panel urgent-panel"><div class="panel-head"><div><h2 class="panel-title">Requests needing attention</h2><p class="panel-sub">Sorted by priority</p></div><button class="text-link" data-goto="requests">View all →</button></div><div class="request-list" id="urgentRequests"></div></div>
+              <div class="panel"><div class="panel-head"><div><h2 class="panel-title">Supply snapshot</h2><p class="panel-sub">Illustrative central inventory</p></div><button class="text-link" data-goto="inventory">Details →</button></div><div class="inventory" id="inventorySnapshot"></div></div>
+            </div>
+          </div>
+          <div class="panel activity"><div class="panel-head"><div><h2 class="panel-title">Recent activity</h2><p class="panel-sub">Changes recorded in this local demo</p></div><span class="tag low">LOCAL DEMO</span></div><div class="activity-list" id="activityList"></div></div>
+          <div class="footer-note"><span>ⓘ</span> All names, counts, locations, and requests are fictional sample data for a student prototype.</div>
+        </section>
+        <section class="view-panel" id="view-requests"><div class="panel"><div class="panel-head"><div><h2 class="panel-title">Resource requests</h2><p class="panel-sub">Track what response teams say they need.</p></div><select id="priorityFilter" aria-label="Filter requests by priority" class="secondary-btn"><option value="all">All priorities</option><option value="High">High priority</option><option value="Medium">Medium priority</option><option value="Low">Low priority</option></select></div><div class="request-list" id="allRequests"></div></div></section>
+        <section class="view-panel" id="view-shelters"><div class="panel"><div class="panel-head"><div><h2 class="panel-title">Shelter directory</h2><p class="panel-sub">Occupancy and available capacity in the sample region.</p></div></div><div class="shelter-list" id="allShelters"></div></div></section>
+        <section class="view-panel" id="view-inventory"><div class="panel"><div class="panel-head"><div><h2 class="panel-title">Inventory management</h2><p class="panel-sub">Example stock levels and replenishment thresholds.</p></div></div><div class="inventory" id="allInventory"></div></div></section>
+      </div>
+    </main>
+  </div>
+</div>
+<div class="modal-backdrop" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><h2 id="modalTitle">Create resource request</h2><p>Record a sample request from a shelter or field team. This prototype saves changes only in the current browser session.</p><form id="requestForm"><div class="form-grid"><label class="field">Request title<input id="requestTitle" required maxlength="70" placeholder="e.g. Drinking water for shelter"></label><label class="field">Location<input id="requestLocation" required maxlength="70" placeholder="e.g. North School Shelter"></label><label class="field">Resource needed<input id="requestResource" required maxlength="50" placeholder="e.g. Drinking water"></label><label class="field">Priority<select id="requestPriority"><option>High</option><option selected>Medium</option><option>Low</option></select></label><label class="field">Quantity needed<input id="requestQuantity" required type="number" min="1" max="100000" placeholder="e.g. 100"></label></div><div class="modal-actions"><button class="secondary-btn" type="button" id="cancelModal">Cancel</button><button class="primary-btn" type="submit">Save request</button></div></form></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const requests = [
+  { id: 1, title: 'Drinking water packs', location: 'East Clinic', resource: 'Water', quantity: 180, priority: 'High', status: 'Awaiting supplies', time: '12 min ago' },
+  { id: 2, title: 'Blankets for families', location: 'Community Hall', resource: 'Blankets', quantity: 75, priority: 'High', status: 'Awaiting supplies', time: '28 min ago' },
+  { id: 3, title: 'First-aid replenishment', location: 'North School Shelter', resource: 'Medical kits', quantity: 24, priority: 'Medium', status: 'In review', time: '41 min ago' }
+];
+const shelters = [
+  { name: 'North School Shelter', area: 'North response zone', people: 420, capacity: 600, icon: '⌂' },
+  { name: 'Community Hall', area: 'Central response zone', people: 360, capacity: 400, icon: '⌂' },
+  { name: 'East Clinic', area: 'East response zone', people: 210, capacity: 300, icon: '✚' },
+  { name: 'Riverside School', area: 'West response zone', people: 250, capacity: 500, icon: '⌂' }
+];
+const inventory = [
+  { name: 'Drinking water packs', stock: 320, unit: 'packs', threshold: 500 },
+  { name: 'Blankets', stock: 110, unit: 'units', threshold: 250 },
+  { name: 'Food kits', stock: 640, unit: 'kits', threshold: 300 },
+  { name: 'First-aid kits', stock: 48, unit: 'kits', threshold: 40 },
+  { name: 'Hygiene kits', stock: 190, unit: 'kits', threshold: 150 }
+];
+const activities = [
+  { icon: '⇄', text: 'Water request logged for East Clinic', time: '12 minutes ago' },
+  { icon: '⌂', text: 'Community Hall occupancy updated', time: '25 minutes ago' },
+  { icon: '▤', text: 'Food kit inventory checked', time: '36 minutes ago' }
+];
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('en-IN');
+function priorityClass(p) { return p.toLowerCase(); }
+function renderShelter(s) {
+  const pct = Math.round(s.people / s.capacity * 100);
+  const cls = pct >= 90 ? 'full' : pct >= 70 ? 'warn' : '';
+  return `<div class="shelter-row"><div class="shelter-symbol">${s.icon}</div><div class="shelter-info"><div class="shelter-name">${escapeHtml(s.name)}</div><div class="shelter-meta">${escapeHtml(s.area)} · ${fmt(s.people)} people</div></div><div class="capacity"><div class="capacity-label"><span>Capacity</span><strong>${pct}%</strong></div><div class="bar"><span class="${cls}" style="width:${pct}%"></span></div></div></div>`;
+}
+function renderRequest(r) {
+  return `<div class="request-row"><div class="priority ${priorityClass(r.priority)}"></div><div class="request-main"><div class="request-name">${escapeHtml(r.title)}</div><div class="request-detail">${escapeHtml(r.location)} · ${fmt(r.quantity)} ${escapeHtml(r.resource.toLowerCase())}<br>${escapeHtml(r.status)} · ${escapeHtml(r.time)}</div></div><span class="tag ${priorityClass(r.priority)}">${escapeHtml(r.priority)}</span></div>`;
+}
+function renderInventoryItem(item) {
+  const pct = Math.min(100, Math.round(item.stock / item.threshold * 100));
+  const below = item.stock < item.threshold;
+  const width = Math.min(100, pct);
+  return `<div class="inventory-item"><div class="inventory-line"><span>${escapeHtml(item.name)}</span><strong>${fmt(item.stock)} ${escapeHtml(item.unit)}</strong></div><div class="bar"><span class="${below ? 'warn' : ''}" style="width:${width}%"></span></div><div style="font-size:9px;color:var(--site-on-background);opacity:.58;margin-top:5px">Replenishment threshold: ${fmt(item.threshold)} ${escapeHtml(item.unit)}${below ? ' · Replenishment suggested' : ''}</div></div>`;
+}
+function escapeHtml(value) { return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function renderAll() {
+  $('activeCount').textContent = String(requests.length).padStart(2,'0');
+  $('navRequestCount').textContent = requests.length;
+  $('shelterCount').textContent = String(shelters.length).padStart(2,'0');
+  $('peopleCount').textContent = fmt(shelters.reduce((sum,s)=>sum+s.people,0));
+  $('lowCount').textContent = String(inventory.filter(i=>i.stock<i.threshold).length).padStart(2,'0');
+  $('overviewShelters').innerHTML = shelters.slice(0,3).map(renderShelter).join('');
+  $('allShelters').innerHTML = shelters.map(renderShelter).join('');
+  const sorted = [...requests].sort((a,b)=>({High:0,Medium:1,Low:2}[a.priority]-{High:0,Medium:1,Low:2}[b.priority]));
+  $('urgentRequests').innerHTML = sorted.slice(0,3).map(renderRequest).join('') || '<div class="empty-state">No open requests yet. Create one to get started.</div>';
+  const filtered = $('priorityFilter').value;
+  const visible = requests.filter(r=>filtered==='all'||r.priority===filtered).sort((a,b)=>({High:0,Medium:1,Low:2}[a.priority]-{High:0,Medium:1,Low:2}[b.priority]));
+  $('allRequests').innerHTML = visible.map(renderRequest).join('') || '<div class="empty-state">No requests match this filter.</div>';
+  $('inventorySnapshot').innerHTML = inventory.slice(0,3).map(renderInventoryItem).join('');
+  $('allInventory').innerHTML = inventory.map(renderInventoryItem).join('');
+  $('activityList').innerHTML = activities.slice(0,5).map(a=>`<div class="activity-row"><div class="activity-bullet">${a.icon}</div><div class="activity-copy">${escapeHtml(a.text)}<span>${escapeHtml(a.time)}</span></div></div>`).join('');
+}
+const viewText = { overview: ['Response overview','A shared picture of urgent needs, shelter capacity, and available supplies.'], requests: ['Resource requests','Review, filter, and log needs reported by field teams.'], shelters: ['Shelter directory','Check sample occupancy and capacity across the response area.'], inventory: ['Inventory management','Review available supplies and identify items that need replenishment.'] };
+function setView(view) {
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('show'));
+  $('view-'+view).classList.add('show');
+  document.querySelectorAll('.nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  $('crumbCurrent').textContent = viewText[view][0].replace('Response ','');
+  $('pageTitle').textContent = viewText[view][0]; $('pageSubtitle').textContent = viewText[view][1];
+  $('newRequestBtn').style.display = view === 'inventory' ? 'none' : 'inline-flex';
+}
+document.querySelectorAll('.nav button[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.goto)));
+$('priorityFilter').addEventListener('change',renderAll);
+const modal = $('requestModal');
+$('newRequestBtn').addEventListener('click',()=>{modal.classList.add('show');$('requestTitle').focus();});
+$('cancelModal').addEventListener('click',()=>modal.classList.remove('show'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('show');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('show');});
+$('requestForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const item = {id:Date.now(), title:$('requestTitle').value.trim(), location:$('requestLocation').value.trim(), resource:$('requestResource').value.trim(), quantity:Number($('requestQuantity').value), priority:$('requestPriority').value, status:'New request', time:'Just now'};
+  if(!item.title||!item.location||!item.resource||!Number.isFinite(item.quantity)||item.quantity<1)return;
+  requests.unshift(item); activities.unshift({icon:'＋',text:`New ${item.priority.toLowerCase()} priority request logged: ${item.title}`,time:'Just now'});
+  renderAll(); $('requestForm').reset(); modal.classList.remove('show'); setView('requests'); showToast('Request added to the local demo.');
+});
+let toastTimer;
+function showToast(message){const t=$('toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);}
+renderAll();
+</script>
+</body>
+</html>
