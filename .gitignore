@@ -1,18 +1,12 @@
-# Operating system files
-.DS_Store
-Thumbs.db
-
-# Editor settings
-.vscode/
-.idea/
-*.swp
-
-# Python test/cache artifacts
 __pycache__/
 *.py[cod]
-.pytest_cache/
-
-# Local environment files (never commit credentials)
+.venv/
+venv/
 .env
-.env.*
-!.env.example
+instance/
+*.sqlite3
+*.db
+.pytest_cache/
+.coverage
+.DS_Store
+Thumbs.db
